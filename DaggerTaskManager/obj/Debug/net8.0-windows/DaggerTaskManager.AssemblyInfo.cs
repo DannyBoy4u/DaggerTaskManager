@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DaggerTaskManager")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+78af5bd264eace7ea74978dea60b0910f5e62490")]
 [assembly: System.Reflection.AssemblyProductAttribute("DaggerTaskManager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DaggerTaskManager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

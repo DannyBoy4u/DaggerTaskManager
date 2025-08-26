@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\2006S\\Desktop\\Projects\\DAG-GER Project\\DaggerTaskManager\\DaggerTaskManager\\DaggerTaskManager.csproj": {}
+    "C:\\Users\\gregt\\OneDrive\\Documents\\ARA Hackathon\\DaggerTaskManager\\DaggerTaskManager\\DaggerTaskManager.csproj": {}
   },
   "projects": {
-    "C:\\Users\\2006S\\Desktop\\Projects\\DAG-GER Project\\DaggerTaskManager\\DaggerTaskManager\\DaggerTaskManager.csproj": {
+    "C:\\Users\\gregt\\OneDrive\\Documents\\ARA Hackathon\\DaggerTaskManager\\DaggerTaskManager\\DaggerTaskManager.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\2006S\\Desktop\\Projects\\DAG-GER Project\\DaggerTaskManager\\DaggerTaskManager\\DaggerTaskManager.csproj",
+        "projectUniqueName": "C:\\Users\\gregt\\OneDrive\\Documents\\ARA Hackathon\\DaggerTaskManager\\DaggerTaskManager\\DaggerTaskManager.csproj",
         "projectName": "DaggerTaskManager",
-        "projectPath": "C:\\Users\\2006S\\Desktop\\Projects\\DAG-GER Project\\DaggerTaskManager\\DaggerTaskManager\\DaggerTaskManager.csproj",
-        "packagesPath": "C:\\Users\\2006S\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\2006S\\Desktop\\Projects\\DAG-GER Project\\DaggerTaskManager\\DaggerTaskManager\\obj\\",
+        "projectPath": "C:\\Users\\gregt\\OneDrive\\Documents\\ARA Hackathon\\DaggerTaskManager\\DaggerTaskManager\\DaggerTaskManager.csproj",
+        "packagesPath": "C:\\Users\\gregt\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\gregt\\OneDrive\\Documents\\ARA Hackathon\\DaggerTaskManager\\DaggerTaskManager\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\2006S\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\gregt\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

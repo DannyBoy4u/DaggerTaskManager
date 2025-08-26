@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -13,6 +14,10 @@ public partial class MainWindow : Window
     private HubConnection _connection;
     private readonly string _userName;
 
+    // Dictionary to store tasks for specific dates
+    private Dictionary<DateTime, List<string>> tasksByDate = new Dictionary<DateTime, List<string>>();
+
+
     public MainWindow()
     {
         InitializeComponent();
@@ -23,6 +28,74 @@ public partial class MainWindow : Window
         
         SetupSignalR();
     }
+
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Example: Seed some important tasks
+        tasksByDate[DateTime.Today] = new List<string> { "Submit report", "Team standup 10am" };
+        tasksByDate[DateTime.Today.AddDays(1)] = new List<string> { "Prepare slides for demo" };
+        tasksByDate[DateTime.Today.AddDays(3)] = new List<string> { "Project deadline!" };
+    }
+
+    private void TaskCalendar_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (TaskCalendar.SelectedDate.HasValue)
+        {
+            DateTime selectedDate = TaskCalendar.SelectedDate.Value.Date;
+            DueDatesList.Items.Clear();
+
+            if (tasksByDate.ContainsKey(selectedDate))
+            {
+                foreach (var task in tasksByDate[selectedDate])
+                {
+                    DueDatesList.Items.Add(new ListBoxItem { Content = task });
+                }
+            }
+            else
+            {
+                DueDatesList.Items.Add(new ListBoxItem
+                {
+                    Content = "No tasks for this day",
+                    IsEnabled = false
+                });
+            }
+        }
+    }
+
+    private void HighlightImportantDates()
+    {
+        TaskCalendar.Loaded += (s, e) =>
+        {
+            foreach (var button in FindVisualChildren<CalendarDayButton>(TaskCalendar))
+            {
+                if (button.DataContext is DateTime date)
+                {
+                    if (tasksByDate.ContainsKey(date.Date))
+                    {
+                        button.Tag = "Important"; // triggers the red background
+                    }
+                }
+            }
+        };
+    }
+
+    // Utility to find all CalendarDayButton controls
+    private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+    {
+        if (depObj != null)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+                if (child is T t)
+                    yield return t;
+
+                foreach (var childOfChild in FindVisualChildren<T>(child))
+                    yield return childOfChild;
+            }
+        }
+    }
+
 
     private void SetupSignalR()
     {
