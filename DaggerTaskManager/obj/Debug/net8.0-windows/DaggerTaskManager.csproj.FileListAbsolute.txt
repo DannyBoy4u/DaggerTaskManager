@@ -1,0 +1,88 @@
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.exe
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.deps.json
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.runtimeconfig.json
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.pdb
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\MainWindow.g.cs
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager_MarkupCompile.cache
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\MainWindow.baml
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.g.resources
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.AssemblyInfoInputs.cache
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.AssemblyInfo.cs
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.csproj.CoreCompileInputs.cache
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\refint\DaggerTaskManager.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.pdb
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.genruntimeconfig.cache
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\ref\DaggerTaskManager.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.csproj.AssemblyReference.cache
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.Connections.Abstractions.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.Http.Connections.Client.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.Http.Connections.Common.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.SignalR.Client.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.SignalR.Client.Core.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.SignalR.Common.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.SignalR.Protocols.Json.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Bcl.TimeProvider.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Features.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Logging.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Options.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Primitives.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Diagnostics.DiagnosticSource.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.IO.Pipelines.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Net.ServerSentEvents.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Text.Encodings.Web.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Text.Json.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Threading.Channels.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
+C:\Users\2006S\Desktop\Projects\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTa.FE2A13E5.Up2Date
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\MainWindow.baml
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\MainWindow.g.cs
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager_MarkupCompile.cache
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.g.resources
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.AssemblyInfoInputs.cache
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.AssemblyInfo.cs
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.csproj.CoreCompileInputs.cache
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.exe
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.Connections.Abstractions.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.Http.Connections.Client.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.Http.Connections.Common.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.SignalR.Client.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.SignalR.Client.Core.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.SignalR.Common.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.AspNetCore.SignalR.Protocols.Json.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Bcl.TimeProvider.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Features.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Logging.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Options.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\Microsoft.Extensions.Primitives.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Diagnostics.DiagnosticSource.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.IO.Pipelines.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Net.ServerSentEvents.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Text.Encodings.Web.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Text.Json.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\System.Threading.Channels.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.csproj.AssemblyReference.cache
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTa.FE2A13E5.Up2Date
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\refint\DaggerTaskManager.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.pdb
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.deps.json
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.runtimeconfig.json
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.dll
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\bin\Debug\net8.0-windows\DaggerTaskManager.pdb
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\DaggerTaskManager.genruntimeconfig.cache
+C:\Users\2006S\Desktop\Projects\DAG-GER Project\DaggerTaskManager\DaggerTaskManager\obj\Debug\net8.0-windows\ref\DaggerTaskManager.dll
