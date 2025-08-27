@@ -158,7 +158,42 @@ namespace DaggerTaskManager.Views
 
         private void AddTasks_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Add Tasks (placeholder)");
+            // Show the input panel when Add Tasks is clicked
+            AddTaskInputPanel.Visibility = Visibility.Visible;
+        }
+
+        private void SubmitTaskButton_Click(object sender, RoutedEventArgs e)
+        {
+            string taskLink = TaskLinkTextBox.Text;
+
+            if (!string.IsNullOrWhiteSpace(taskLink))
+            {
+                // Placeholder logic for later endpoint integration
+                MessageBox.Show($"Task link submitted: {taskLink}");
+            }
+            else
+            {
+                MessageBox.Show("Please enter a valid link.");
+            }
+
+            // Optionally clear and hide the panel again
+            TaskLinkTextBox.Text = string.Empty;
+            AddTaskInputPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void TaskLinkTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TaskLinkPlaceholder.Visibility =
+                string.IsNullOrEmpty(TaskLinkTextBox.Text) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void TaskLinkTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                e.Handled = true; // prevent default newline behavior
+                SubmitTaskButton_Click(SubmitTaskButton, new RoutedEventArgs());
+            }
         }
     }
 }
