@@ -1,20 +1,24 @@
+using Atlassian.Jira;
+using DaggerTaskManager.MappingObjects;
+using DaggerTaskManager.TaskPlugins;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using DaggerTaskManager.MappingObjects;
 
 namespace DaggerTaskManager.Views
 {
     public partial class MainDashboardPage : Page
     {
         private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(30) };
+        private readonly JiraLinkService _jiraService;
 
         private CancellationTokenSource? _cts;
 
@@ -29,10 +33,17 @@ namespace DaggerTaskManager.Views
 
         public MainDashboardPage()
         {
+
             InitializeComponent();
             DataContext = this;
 
             Loaded += Get_WorkTasks;
+            //TODO: Set this with env later
+            string email = "";
+            string apiKey = "";
+            string baseUrl = "https://dag-ger.atlassian.net/";
+
+            _jiraService = new JiraLinkService(baseUrl, email, apiKey);
         }
 
         private Uri BuildUri()
@@ -161,15 +172,64 @@ namespace DaggerTaskManager.Views
             // Show the input panel when Add Tasks is clicked
             AddTaskInputPanel.Visibility = Visibility.Visible;
         }
-
-        private void SubmitTaskButton_Click(object sender, RoutedEventArgs e)
+        //public string? AssigneeName { get; set; }
+        //public string Title { get; set; } = string.Empty;
+        //public long EpochCreateDate { get; set; }
+        //public long EpochUpdatedDate { get; set; }
+        //public string? Description { get; set; }
+        //public string? UrlLink { get; set; }
+        //public string? SiteSource { get; set; }
+        //public long EpochDueDate { get; set; }
+        //public long EpochStartDate { get; set; }
+        //public string? Status { get; set; }
+        //public WorkTaskTypeMappingObject? TaskType { get; set; }
+        //public Guid TaskTypeId { get; set; }
+        private async void SubmitTaskButton_Click(object sender, RoutedEventArgs e)
         {
+
             string taskLink = TaskLinkTextBox.Text;
+
+            var uri = new Uri(taskLink);
+            // Normalize: if user pasted a deep “/jira/software/…” path, still keep base host
+            var siteBase = $"{uri.Scheme}://{uri.Host}";
+            if (!siteBase.Equals("https://dag-ger.atlassian.net", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException($"This client is configured for {"https://dag-ger.atlassian.net/"}, but the link is for {siteBase}.");
+
 
             if (!string.IsNullOrWhiteSpace(taskLink))
             {
-                // Placeholder logic for later endpoint integration
-                MessageBox.Show($"Task link submitted: {taskLink}");
+                var task = await _jiraService.LoadFromTaskLinkAsync(taskLink);
+
+                var taskToInsert = task.Select(_ => new GetWorkItemFullMappingObject
+                {
+                    AssigneeName = _.Assignee,
+                    Title = _.Title,
+                    Description = _.Description,
+                    UrlLink = taskLink,
+                    SiteSource = "Jira",
+                    EpochDueDate = _.EndDate ?? 0,
+                    EpochStartDate = _.StartDate ?? 0,
+                    Status = _.Status,
+                    TaskTypeId = new Guid("9ce0ab91-8506-4005-908b-6e937c87d11a")
+                }).FirstOrDefault();
+
+                // POST to /work-tasks
+                var response = await Http.PostAsJsonAsync(BuildUri(), taskToInsert);
+                response.EnsureSuccessStatusCode();
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
+                {
+                    MessageBox.Show($"Task already is available under task chat.");
+                }
+
+                else
+                {
+                    // The endpoint returns 201 with the created DTO — read it back:
+                    // var created = await response.Content.ReadFromJsonAsync<GetWorkItemFullMappingObject>();
+
+                    // Placeholder logic for later endpoint integration
+                    MessageBox.Show($"Task link submitted: {taskLink}");
+                }
             }
             else
             {
@@ -187,7 +247,7 @@ namespace DaggerTaskManager.Views
                 string.IsNullOrEmpty(TaskLinkTextBox.Text) ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void TaskLinkTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        private async void TaskLinkTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
