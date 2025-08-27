@@ -10,7 +10,20 @@ namespace DaggerTaskManager.Views
     {
         private HubConnection _connection;
         private readonly string _userName;
+        private readonly Dictionary<string, Brush> _userColors = new();
 
+
+        // Palette of colors to cycle through
+        private readonly List<Brush> _palette = new()
+        {
+            (SolidColorBrush)new BrushConverter().ConvertFrom("#007acc")!, // blue
+            (SolidColorBrush)new BrushConverter().ConvertFrom("#1abc9c")!, // teal
+            (SolidColorBrush)new BrushConverter().ConvertFrom("#9b59b6")!, // purple
+            (SolidColorBrush)new BrushConverter().ConvertFrom("#e67e22")!, // orange
+            (SolidColorBrush)new BrushConverter().ConvertFrom("#2ecc71")!, // green
+            (SolidColorBrush)new BrushConverter().ConvertFrom("#e74c3c")!  // red
+        };
+        
         public TaskChatPage()
         {
             InitializeComponent();
@@ -22,6 +35,20 @@ namespace DaggerTaskManager.Views
             SetupSignalR();
         }
 
+        private int _nextColorIndex = 0;
+        
+        private Brush GetUserColor(string user)
+        {
+            if (_userColors.TryGetValue(user, out var color))
+                return color;
+        
+            // Assign next color in palette
+            var newColor = _palette[_nextColorIndex % _palette.Count];
+            _userColors[user] = newColor;
+            _nextColorIndex++;
+            return newColor;
+        }
+        
         private void SetupSignalR()
         {
             _connection = new HubConnectionBuilder()
@@ -103,46 +130,47 @@ namespace DaggerTaskManager.Views
             ScrollToBottom();
         }
 
-        private void AddMessageBubble(string user, string message, bool isSelf)
-        {
-            // Inner content: top-left blue label + text
-            var stack = new StackPanel { Orientation = Orientation.Vertical };
-
-            var label = new TextBlock
-            {
-                Text = user,
-                Foreground = Brushes.White,
-                Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#007acc"),
-                Padding = new Thickness(6, 2, 6, 2),
-                FontWeight = FontWeights.Bold,
-                FontSize = 12,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = new Thickness(0, 0, 0, 6)
-            };
-
-            var text = new TextBlock
-            {
-                Text = message,
-                Foreground = Brushes.White,
-                TextWrapping = TextWrapping.Wrap,
-                MaxWidth = 320
-            };
-
-            stack.Children.Add(label);
-            stack.Children.Add(text);
-
-            var bubble = new Border
-            {
-                Background = (SolidColorBrush)new BrushConverter().ConvertFrom(isSelf ? "#274b6d" : "#3a3a3a"),
-                CornerRadius = new CornerRadius(10),
-                Padding = new Thickness(12),
-                Margin = new Thickness(6),
-                HorizontalAlignment = isSelf ? HorizontalAlignment.Right : HorizontalAlignment.Left,
-                Child = stack
-            };
-
-            ChatPanel.Children.Add(bubble);
-        }
+         private void AddMessageBubble(string user, string message, bool isSelf)
+         {
+             var stack = new StackPanel { Orientation = Orientation.Vertical };
+        
+             var label = new TextBlock
+             {
+                 Text = user,
+                 Foreground = Brushes.White,
+                 Background = GetUserColor(user),   // 👈 unique per user
+                 Padding = new Thickness(6, 2, 6, 2),
+                 FontWeight = FontWeights.Bold,
+                 FontSize = 12,
+                 HorizontalAlignment = HorizontalAlignment.Left,
+                 Margin = new Thickness(0, 0, 0, 6)
+             };
+        
+             var text = new TextBlock
+             {
+                 Text = message,
+                 Foreground = Brushes.White,
+                 TextWrapping = TextWrapping.Wrap,
+                 MaxWidth = 320
+             };
+        
+             stack.Children.Add(label);
+             stack.Children.Add(text);
+        
+             var bubble = new Border
+             {
+                 Background = isSelf
+                     ? (SolidColorBrush)new BrushConverter().ConvertFrom("#274b6d")!  // keep self distinct
+                     : (SolidColorBrush)new BrushConverter().ConvertFrom("#3a3a3a")!, // other base background
+                 CornerRadius = new CornerRadius(10),
+                 Padding = new Thickness(12),
+                 Margin = new Thickness(6),
+                 HorizontalAlignment = isSelf ? HorizontalAlignment.Right : HorizontalAlignment.Left,
+                 Child = stack
+             };
+        
+             ChatPanel.Children.Add(bubble);
+         }
 
         private void ScrollToBottom()
         {
