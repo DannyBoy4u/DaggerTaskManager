@@ -1,14 +1,15 @@
+using DaggerTaskManager.MappingObjects;
+using DaggerTaskManager.TaskPlugins;
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net.Http;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Net.Http;
 using System.Windows.Media;
-using DaggerTaskManager.MappingObjects;
-using Microsoft.AspNetCore.SignalR.Client;
-using System.Text.Json;
 
 namespace DaggerTaskManager.Views
 {
@@ -18,6 +19,7 @@ namespace DaggerTaskManager.Views
         private readonly string _userName;
         private readonly Dictionary<string, Brush> _userColors = new();
         private int _nextColorIndex = 0;
+
 
         private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(30) };
 
