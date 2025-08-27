@@ -1,68 +1,550 @@
 ﻿<Window x:Class="DaggerTaskManager.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="DAG-GER Task Manager" Height="600" Width="480"
-        Background="#1e1e1e" WindowStartupLocation="CenterScreen">
-    <Grid>
+        Title="DAG-GER • Dashboard" Height="560" Width="920"
+        WindowStartupLocation="CenterScreen"
+        Background="#0F1115">
+
+    <Window.Resources>
+        <!-- Ghost chip button -->
+        <Style x:Key="ChipButton" TargetType="Button">
+            <Setter Property="Foreground" Value="#CFE7FF"/>
+            <Setter Property="Background" Value="#162235"/>
+            <Setter Property="BorderBrush" Value="#2A3B55"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="10"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Left"
+                                      VerticalAlignment="Center"
+                                      Margin="8,2"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1B2A40"/>
+                    <Setter Property="BorderBrush" Value="#334966"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Opacity" Value="0.85"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ===== Theme brushes must come first (StaticResource order matters) ===== -->
+        <SolidColorBrush x:Key="Bg.Base"    Color="#0F1115"/>
+        <SolidColorBrush x:Key="Bg.Card"    Color="#14171F"/>
+        <SolidColorBrush x:Key="Border.Mid" Color="#232837"/>
+        <SolidColorBrush x:Key="Text.Main"  Color="#E6EAF2"/>
+        <SolidColorBrush x:Key="Text.Sub"   Color="#AAB2C0"/>
+        <SolidColorBrush x:Key="Accent"     Color="#10A37F"/>
+        <!-- GPT green -->
+
+        <!-- Effects -->
+        <DropShadowEffect x:Key="TileShadow"        Color="#3BA3FF" BlurRadius="18" ShadowDepth="0" Opacity="0.22"/>
+        <DropShadowEffect x:Key="TileShadow.Hover"  Color="#55B2FF" BlurRadius="24" ShadowDepth="0" Opacity="0.32"/>
+        <DropShadowEffect x:Key="CardShadow"        Color="#3BA3FF" BlurRadius="22" ShadowDepth="0" Opacity="0.20"/>
+        <DropShadowEffect x:Key="CardShadow.Hover"  Color="#55B2FF" BlurRadius="28" ShadowDepth="0" Opacity="0.30"/>
+
+        <!-- CTA button -->
+        <Style x:Key="CtaButton" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" CornerRadius="12"
+                        Background="#1C2B3E"
+                        BorderBrush="#2F3A54" BorderThickness="1"
+                        Padding="14,10"
+                        Effect="{StaticResource CardShadow}">
+                            <!-- Use Grid for proper alignment -->
+                            <Grid VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Icon -->
+                                <TextBlock Grid.Column="0"
+                                   Text="&#xE122;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   Foreground="#CFE7FF"
+                                   FontSize="16"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+
+                                <!-- Button content -->
+                                <ContentPresenter Grid.Column="1"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Effect" Value="{StaticResource CardShadow.Hover}"/>
+                                <Setter TargetName="bd" Property="Background" Value="#21314A"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.92"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="#E6EAF2"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- Skinny label -->
+        <Style x:Key="Caption" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Text.Sub}"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <!-- Prompt textbox -->
+        <Style x:Key="PromptBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#11161F"/>
+            <Setter Property="Foreground" Value="#E6EAF2"/>
+            <Setter Property="BorderBrush" Value="#2C3648"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="MinHeight" Value="64"/>
+        </Style>
+
+        <!-- Card -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Bg.Card}"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="12"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border.Mid}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+        </Style>
+
+        <!-- Minimal tile button with blue glow -->
+        <Style x:Key="TileButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource Text.Main}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd"
+                                Background="{StaticResource Bg.Card}"
+                                BorderBrush="{StaticResource Border.Mid}"
+                                BorderThickness="1"
+                                CornerRadius="16"
+                                Margin="10"
+                                Height="110"
+                                Effect="{StaticResource TileShadow}">
+                            <Grid Margin="14">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock x:Name="Icon"
+                                           Text="{TemplateBinding Tag}"
+                                           Foreground="{StaticResource Text.Sub}"
+                                           FontFamily="Segoe MDL2 Assets"
+                                           FontSize="24" Opacity="0.9"
+                                           HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                <ContentPresenter Grid.Row="1"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Bottom"
+                                                  Margin="0,8,0,2"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Effect" Value="{StaticResource TileShadow.Hover}"/>
+                                <Setter TargetName="bd" Property="Background" Value="#161A23"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#2F3A54"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
+    <DockPanel>
+
+        <Grid Background="{StaticResource Bg.Base}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Header -->
             <RowDefinition Height="*"/>
-            <!-- Chat area -->
-            <RowDefinition Height="Auto"/>
-            <!-- Input -->
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <DockPanel Grid.Row="0" Background="#252526" >
-            <TextBlock Text="Task Chat"
-					    Padding="10,0,0,0"
-                       Foreground="White" FontSize="16" FontWeight="Bold"/>
-            <TextBlock x:Name="UserNameBlock"
-                       Foreground="#9cdcfe" Margin="10,0,0,0"
-                       VerticalAlignment="Center"/>
-        </DockPanel>
-
-        <!-- Chat history -->
-        <ScrollViewer x:Name="ChatScroll"
-                      Grid.Row="1"
-                      VerticalScrollBarVisibility="Auto"
-                      Background="#252526">
-            <StackPanel x:Name="ChatPanel" Margin="10"/>
-        </ScrollViewer>
-
-        <!-- Input area -->
-        <Grid Grid.Row="2" Margin="10">
+        <!-- ===== Top row ===== -->
+        <Grid Grid.Row="0" Margin="14">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="1.4*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="InputBox"
-                     Grid.Column="0"
-                     Background="#2d2d30"
-                     Foreground="White"
-                     FontSize="14"
-                     FontFamily="Segoe UI"
-                     Padding="8"
-                     BorderThickness="1"
-                     BorderBrush="Gray"
-                     VerticalAlignment="Center"
-                     MinHeight="40"
-                     AcceptsReturn="True"
-                     TextWrapping="Wrap"
-                     PreviewKeyDown="InputBox_PreviewKeyDown"/>
+            <!-- Hero: Task Chat (tightened) -->
+            <Border Style="{StaticResource Card}" Grid.Column="0" Effect="{StaticResource CardShadow}">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#141B24" Offset="0"/>
+                        <GradientStop Color="#122029" Offset="0.55"/>
+                        <GradientStop Color="#10221D" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
 
-            <Button Grid.Column="1"
-                    Content="Send"
-					Margin="8,0,0,0"
-                    Padding="10,6"
-                    Background="#007acc"
-                    Foreground="White"
-                    BorderThickness="0"
-                    VerticalAlignment="Stretch"
-                    Height="{Binding ActualHeight, ElementName=InputBox}"
-                    Click="SendButton_Click"/>
+                <!-- Two columns: Left content / Right recent chats -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- LEFT COLUMN (with agile/status lines) -->
+                    <Grid Grid.Column="0" Margin="12,10,20,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <!-- header -->
+                            <RowDefinition Height="Auto"/>
+                            <!-- status stack -->
+                            <RowDefinition Height="*"/>
+                            <!-- spacer -->
+                            <RowDefinition Height="Auto"/>
+                            <!-- footer -->
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <TextBlock Grid.Row="0"
+               Text="Task Manager"
+               Foreground="{StaticResource Text.Main}"
+               FontSize="24" FontWeight="Bold"
+               Margin="0,0,0,8"/>
+
+                        <!-- Agile / Tasking Status (centered, same style as Active Chats) -->
+                        <StackPanel Grid.Row="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="0,4,0,0">
+
+                            <!-- Current Release -->
+                            <TextBlock Foreground="{StaticResource Text.Sub}" FontSize="12"
+                   HorizontalAlignment="Left" Margin="0,2">
+            Current Release:
+            <Run Text="{Binding ElementName=CurrentReleaseName, Path=Text}" Foreground="#CFE7FF"/>
+                            </TextBlock>
+                            <TextBlock x:Name="CurrentReleaseName" Text="Release 1.4" Visibility="Collapsed"/>
+
+                            <!-- Current Sprint -->
+                            <TextBlock Foreground="{StaticResource Text.Sub}" FontSize="12"
+                   HorizontalAlignment="Left" Margin="0,2">
+            Current Sprint:
+            <Run Text="{Binding ElementName=CurrentSprintName, Path=Text}" Foreground="#CFE7FF"/>
+                            </TextBlock>
+                            <TextBlock x:Name="CurrentSprintName" Text="Sprint 43 — UI Polish" Visibility="Collapsed"/>
+
+                            <!-- Non-Prod Release Window -->
+                            <TextBlock Foreground="{StaticResource Text.Sub}" FontSize="12"
+                   HorizontalAlignment="Left" Margin="0,2">
+            Non-Prod Release Window:
+            <Run Text="{Binding ElementName=NonProdWindow, Path=Text}" Foreground="#CFE7FF"/>
+                            </TextBlock>
+                            <TextBlock x:Name="NonProdWindow" Text="03/12/25 09:00 - 03/12/25 17:00" Visibility="Collapsed"/>
+
+                            <!-- Prod Release Window -->
+                         
+                            <TextBlock x:Name="ProdWindow" Text="03/14/25 22:00 - 03/15/25 02:00" Visibility="Collapsed"/>
+
+                            <!-- Last QA Deployment -->
+                            <TextBlock Foreground="{StaticResource Text.Sub}" FontSize="12"
+                   HorizontalAlignment="Left" Margin="0,2">
+            Last QA Deployment:
+            <Run Text="{Binding ElementName=LastQADeployment, Path=Text}" Foreground="#CFE7FF"/>
+                            </TextBlock>
+                            <TextBlock x:Name="LastQADeployment" Text="03/10/25 15:42" Visibility="Collapsed"/>
+
+                            <!-- Unassigned Tasks Count -->
+                            <TextBlock Foreground="{StaticResource Text.Sub}" FontSize="12"
+                   HorizontalAlignment="Left" Margin="0,2">
+            Unassigned Tasks Count:
+            <Run Text="{Binding ElementName=UnassignedTasksCount, Path=Text}" Foreground="#CFE7FF"/>
+                            </TextBlock>
+                            <TextBlock x:Name="UnassignedTasksCount" Text="4" Visibility="Collapsed"/>
+
+                            <!-- Overdue Items Count -->
+                            <TextBlock Foreground="{StaticResource Text.Sub}" FontSize="12"
+                   HorizontalAlignment="Left" Margin="0,2">
+            Overdue Items Count:
+            <Run Text="{Binding ElementName=OverdueItemsCount, Path=Text}" Foreground="#CFE7FF"/>
+                            </TextBlock>
+                            <TextBlock x:Name="OverdueItemsCount" Text="2" Visibility="Collapsed"/>
+
+                        </StackPanel>
+
+                        <!-- Spacer (Row 2) keeps footer at the bottom -->
+
+                        <!-- Footer: Go to chat + Active Chats (center) -->
+                        <Grid Grid.Row="3" Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- CTA -->
+                            <Button Grid.Column="0"
+        Style="{StaticResource CtaButton}"
+        Click="GoToChat_Click"
+        Margin="0,0,12,0">
+                                <TextBlock Text="Go to task chat"/>
+                            </Button>
+
+                            <!-- Centered status (same pattern as before) -->
+                            <TextBlock Grid.Column="1"
+                   Text="Active Chats:  "
+                   Foreground="{StaticResource Text.Sub}"
+                   FontSize="12"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center">
+            <Run/>
+            <Run Text="{Binding ElementName=ActiveThreadsCount, Path=Text}" Foreground="#CFE7FF"/>
+                            </TextBlock>
+
+                            <!-- Hidden source for binding the number -->
+                            <TextBlock Grid.Column="2"
+                   x:Name="ActiveThreadsCount"
+                   Text="3"
+                   Visibility="Collapsed"/>
+                        </Grid>
+                    </Grid>
+
+
+                    <!-- RIGHT COLUMN: Recent Chats (dynamic) -->
+                    <StackPanel Grid.Column="1" Margin="10,10,10,10" VerticalAlignment="Center">
+                        <TextBlock Text="Recent Chats"
+               Foreground="{StaticResource Text.Main}"
+               FontWeight="SemiBold"
+               Margin="0,0,0,8"/>
+
+                        <!-- Renders each chat title as a ChipButton -->
+                        <ItemsControl x:Name="RecentChatsList" ItemsSource="{Binding RecentChats}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource ChipButton}"
+                        Content="{Binding}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="12,8"
+                        Margin="0,0,0,8"
+                        Click="RecentChat_Click"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+
+                        <!-- Secondary action -->
+                        <Button Margin="0,10,0,0" Padding="10,6" Cursor="Hand" Click="OpenThread_Click">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="10" Background="#1B2330" BorderBrush="#2F3A54" BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal" Margin="8,2">
+                                            <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets"
+                                   Foreground="{StaticResource Text.Sub}" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Open selected thread" Foreground="{StaticResource Text.Main}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+
+                </Grid>
+            </Border>
+
+
+            <!-- Side: Calendar placeholder -->
+            <Border Style="{StaticResource Card}" Grid.Column="1">
+                <Grid>
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#132338" Offset="0"/>
+                            <GradientStop Color="#1E3A5C" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+
+                    <StackPanel Margin="12">
+                        <TextBlock Text="Calendar"
+                                   Foreground="#CFE7FF"
+                                   FontWeight="Bold" FontSize="18"
+                                   Margin="0,0,0,10"/>
+
+                        <!-- Weekday header -->
+                        <UniformGrid Rows="1" Columns="7" Margin="0,0,0,6">
+                            <TextBlock Text="Sun" Foreground="#AFC8E8" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Mon" Foreground="#AFC8E8" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Tue" Foreground="#AFC8E8" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Wed" Foreground="#AFC8E8" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Thu" Foreground="#AFC8E8" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Fri" Foreground="#AFC8E8" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Sat" Foreground="#AFC8E8" HorizontalAlignment="Center"/>
+                        </UniformGrid>
+
+                        <!-- 6×7 grid (42 cells): days 1–31 + blanks -->
+                        <UniformGrid Rows="6" Columns="7">
+                            <!-- Day cells -->
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="1"  Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="2"  Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="3"  Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="4"  Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="5"  Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="6"  Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="7"  Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="8"  Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="9"  Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="10" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="11" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="12" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="13" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="14" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="15" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="16" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="17" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="18" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="19" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="20" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="21" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="22" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="23" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="24" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="25" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="26" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="27" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="28" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="29" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="30" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border Background="#1B2738" Margin="2" CornerRadius="6">
+                                <TextBlock Text="31" Foreground="#CFE7FF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <!-- Fill to 42 -->
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                            <Border Background="#162235" Margin="2" CornerRadius="6"/>
+                        </UniformGrid>
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Grid>
+
+        <!-- ===== Bottom tiles ===== -->
+        <StackPanel Grid.Row="1" Margin="14,0,14,16">
+
+            <UniformGrid Columns="4">
+                <Button Style="{StaticResource TileButton}" Tag="&#xE710;" Content="Add Tasks" Click="AddTasks_Click"/>
+                <Button Style="{StaticResource TileButton}" Tag="&#xE9D9;"  Content="Status"             Click="Status_Click"/>
+                <Button Style="{StaticResource TileButton}" Tag="&#xECAA;"  Content="Add / Manage Plugins" Click="Plugins_Click"/>
+                <Button Style="{StaticResource TileButton}" Tag="&#xE7B8;"  Content="View Archived"      Click="Archived_Click"/>
+            </UniformGrid>
+        </StackPanel>
+        
+      
     </Grid>
+        
+                <!-- The navigation host -->
+<Frame x:Name="RootFrame"
+           NavigationUIVisibility="Hidden"
+           Background="#1e1e1e"/>
+    </DockPanel>
 </Window>

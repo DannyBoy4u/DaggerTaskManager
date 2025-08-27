@@ -1,153 +1,136 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using DaggerTaskManager.MappingObjects;
+using DaggerTaskManager.Views;
+using System.Collections.ObjectModel;
+using System.Net.Http;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
 
-namespace DaggerTaskManager;
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class MainWindow : Window
+namespace DaggerTaskManager
 {
-    private HubConnection _connection;
-    private readonly string _userName;
-
-    public MainWindow()
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
-
-        // Simple username (timestamp to avoid duplicates)
-        _userName = $"User-{Environment.MachineName}-{DateTime.Now:HHmmss}";
-        UserNameBlock.Text = $" |   You: {_userName}";
-        
-        SetupSignalR();
-    }
-
-    private void SetupSignalR()
-    {
-        _connection = new HubConnectionBuilder()
-            .WithUrl("http://localhost:5080/chatHub") // matches server
-            .WithAutomaticReconnect()
-            .Build();
-
-        // Incoming messages
-        _connection.On<string, string>("ReceiveMessage", (user, message) =>
+        // Reuse one HttpClient for the app (avoid socket exhaustion).
+        private static readonly HttpClient Http = new()
         {
-            Dispatcher.Invoke(() =>
+            Timeout = TimeSpan.FromSeconds(30) // adjust as needed
+        };
+
+        private CancellationTokenSource? _cts;
+
+        // Dynamic, bindable list for Recent Chats
+        public ObservableCollection<string> RecentChats { get; } = new()
+        {
+            "Sprint 42 — blocked tasks review",
+            "Generate QA checklist for v0.3",
+            "Summarize meeting notes → tasks"
+        };
+
+        public MainWindow()
+        {
+            this.Loaded += Get_WorkTasks;
+
+            InitializeComponent();
+            DataContext = this; // enables {Binding RecentChats}
+        }
+
+        private Uri BuildUri()
+        {
+            //TODO: Switch this out for a environment variable setting variable
+            var baseUri = new Uri("http://localhost:5080", UriKind.Absolute);
+            return new Uri(baseUri, "/work-tasks".TrimStart('/'));
+        }
+
+        private async void Get_WorkTasks(object sender, RoutedEventArgs e)
+        {
+            _cts = new CancellationTokenSource();
+            try
             {
-                bool isSelf = string.Equals(user, _userName, StringComparison.OrdinalIgnoreCase);
-                AddMessageBubble(user, message, isSelf);
-                ScrollToBottom();
-            });
-        });
+                var resp = await Http.GetAsync(BuildUri(), _cts.Token);
+                resp.EnsureSuccessStatusCode();
 
-        Connect();
-    }
+                var json = await resp.Content.ReadAsStringAsync(_cts.Token);
 
-    private async void Connect()
-    {
-        try
-        {
-            await _connection.StartAsync();
-            AddSystem("Connected to server.");
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // handles camelCase from JSON
+                };
+
+                List<GetWorkItemFullMappingObject>? workTasks =
+                    JsonSerializer.Deserialize<List<GetWorkItemFullMappingObject>>(json, options);
+
+                if (workTasks.Count != 0)
+                {
+                    RecentChats.Clear();
+                }
+
+
+                workTasks.ForEach(task =>
+                RecentChats.Add(task.Title));
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("Request canceled.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "GET failed");
+            }
+            finally
+            {
+                _cts?.Dispose();
+                _cts = null;
+            }
         }
-        catch (Exception ex)
+
+        // Click handler for each chip
+        private void RecentChat_Click(object sender, RoutedEventArgs e)
         {
-            AddSystem($"Connection error: {ex.Message}");
+            if (sender is Button b && b.Content is string title)
+            {
+                // TODO: navigate/open the thread for 'title'
+                MessageBox.Show($"Open chat: {title}", "Recent Chats");
+            }
         }
-    }
 
-    // Send handlers
-    private void SendButton_Click(object sender, RoutedEventArgs e) => SendMessage();
-
-    private void InputBox_PreviewKeyDown(object sender, KeyEventArgs e)
-    {
-        bool isEnter = e.Key == Key.Return || e.Key == Key.Enter;     // main + numpad
-        bool shiftHeld = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
-
-        if (isEnter && !shiftHeld)
+        // Optional: open the currently "selected" chat if you add selection later
+        private void OpenThread_Click(object sender, RoutedEventArgs e)
         {
-            e.Handled = true; // stop newline
-            SendMessage();   
-            InputBox.Clear();                 
+            MessageBox.Show("Open selected thread (wire up to your selection model).");
         }
-        // If Shift+Enter -> do nothing; TextBox will insert a newline
-    }
 
-    private async void SendMessage()
-    {
-        string text = InputBox.Text.Trim();
-        if (string.IsNullOrEmpty(text)) return;
-        InputBox.Clear();
-
-        try
+        // Top-left Task Chat actions
+        private void Mode_Click(object sender, RoutedEventArgs e) { /* toggle logic optional */ }
+        private void Streaming_Click(object sender, RoutedEventArgs e)
         {
-            await _connection.InvokeAsync("SendMessage", _userName, text);
+            if (sender is ToggleButton tb) tb.Content = (tb.IsChecked == true) ? "On" : "Off";
         }
-        catch (Exception ex)
+        private void PromptInput_KeyDown(object sender, KeyEventArgs e)
         {
-            AddSystem($"Send failed: {ex.Message}");
+            if (e.Key == Key.Enter && !Keyboard.IsKeyDown(Key.LeftShift))
+            {
+                e.Handled = true;
+                // send prompt placeholder
+                MessageBox.Show("Prompt sent.", "Task Chat");
+            }
         }
-    }
-
-    // UI helpers
-    private void AddSystem(string message)
-    {
-        var tb = new TextBlock
+        private void Attach_Click(object sender, RoutedEventArgs e) { MessageBox.Show("Attach (placeholder)"); }
+        private void Mic_Click(object sender, RoutedEventArgs e) { MessageBox.Show("Mic (placeholder)"); }
+        private void Emoji_Click(object sender, RoutedEventArgs e) { MessageBox.Show("Emoji (placeholder)"); }
+        private void GoToChat_Click(object sender, RoutedEventArgs e)
         {
-            Text = message,
-            Foreground = Brushes.Gray,
-            Margin = new Thickness(10, 6, 10, 6),
-            TextWrapping = TextWrapping.Wrap
-        };
-        ChatPanel.Children.Add(tb);
-        ScrollToBottom();
-    }
+            RootFrame.Navigate(new TaskChatPage());
+        }
 
-    private void AddMessageBubble(string user, string message, bool isSelf)
-    {
-        // Inner content: top-left blue label + text
-        var stack = new StackPanel { Orientation = Orientation.Vertical };
+        // Bottom tiles
+        private void Calendar_Click(object sender, RoutedEventArgs e) { MessageBox.Show("Calendar (placeholder)"); }
+        private void Status_Click(object sender, RoutedEventArgs e) { MessageBox.Show("Status (placeholder)"); }
+        private void Plugins_Click(object sender, RoutedEventArgs e) { MessageBox.Show("Plugins (placeholder)"); }
+        private void Archived_Click(object sender, RoutedEventArgs e) { MessageBox.Show("View Archived (placeholder)"); }
 
-        var label = new TextBlock
-        {
-            Text = user,                 // shows the sender name
-            Foreground = Brushes.White,
-            Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#007acc"),
-            Padding = new Thickness(6, 2, 6, 2),
-            FontWeight = FontWeights.Bold,
-            FontSize = 12,
-            HorizontalAlignment = HorizontalAlignment.Left, // width fits text
-            Margin = new Thickness(0, 0, 0, 6)
-        };
+        private void AddTasks_Click(object sender, RoutedEventArgs e) { MessageBox.Show("View Archived (placeholder)"); }
 
-        var text = new TextBlock
-        {
-            Text = message,
-            Foreground = Brushes.White,
-            TextWrapping = TextWrapping.Wrap,
-            MaxWidth = 320
-        };
-
-        stack.Children.Add(label);
-        stack.Children.Add(text);
-
-        var bubble = new Border
-        {
-            Background = (SolidColorBrush)new BrushConverter().ConvertFrom(isSelf ? "#274b6d" : "#3a3a3a"),
-            CornerRadius = new CornerRadius(10),
-            Padding = new Thickness(12),
-            Margin = new Thickness(6),
-            HorizontalAlignment = isSelf ? HorizontalAlignment.Right : HorizontalAlignment.Left,
-            Child = stack
-        };
-
-        ChatPanel.Children.Add(bubble);
-    }
-
-    private void ScrollToBottom()
-    {
-        ChatScroll.ScrollToEnd();
     }
 }

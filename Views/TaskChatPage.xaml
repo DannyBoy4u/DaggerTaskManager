@@ -1,0 +1,67 @@
+﻿<Page x:Class="DaggerTaskManager.Views.TaskChatPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="#1e1e1e">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Chat area -->
+            <RowDefinition Height="Auto"/>
+            <!-- Input -->
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Background="#252526">
+            <TextBlock Text="Task Chat"
+                       Padding="10,0,0,0"
+                       Foreground="White" FontSize="16" FontWeight="Bold"/>
+            <TextBlock x:Name="UserNameBlock"
+                       Foreground="#9cdcfe" Margin="10,0,0,0"
+                       VerticalAlignment="Center"/>
+        </DockPanel>
+
+        <!-- Chat history -->
+        <ScrollViewer x:Name="ChatScroll"
+                      Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      Background="#252526">
+            <StackPanel x:Name="ChatPanel" Margin="10"/>
+        </ScrollViewer>
+
+        <!-- Input area -->
+        <Grid Grid.Row="2" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="InputBox"
+                     Grid.Column="0"
+                     Background="#2d2d30"
+                     Foreground="White"
+                     FontSize="14"
+                     FontFamily="Segoe UI"
+                     Padding="8"
+                     BorderThickness="1"
+                     BorderBrush="Gray"
+                     VerticalAlignment="Center"
+                     MinHeight="40"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     PreviewKeyDown="InputBox_PreviewKeyDown"/>
+
+            <Button Grid.Column="1"
+                    Content="Send"
+                    Margin="8,0,0,0"
+                    Padding="10,6"
+                    Background="#007acc"
+                    Foreground="White"
+                    BorderThickness="0"
+                    VerticalAlignment="Stretch"
+                    Height="{Binding ActualHeight, ElementName=InputBox}"
+                    Click="SendButton_Click"/>
+        </Grid>
+    </Grid>
+</Page>
