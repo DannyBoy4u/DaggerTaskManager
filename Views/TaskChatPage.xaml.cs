@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace DaggerTaskManager.Views
 {
@@ -12,18 +13,18 @@ namespace DaggerTaskManager.Views
         private readonly string _userName;
         private readonly Dictionary<string, Brush> _userColors = new();
 
-
         // Palette of colors to cycle through
-        private readonly List<Brush> _palette = new()
-        {
-            (SolidColorBrush)new BrushConverter().ConvertFrom("#007acc")!, // blue
-            (SolidColorBrush)new BrushConverter().ConvertFrom("#1abc9c")!, // teal
-            (SolidColorBrush)new BrushConverter().ConvertFrom("#9b59b6")!, // purple
-            (SolidColorBrush)new BrushConverter().ConvertFrom("#e67e22")!, // orange
-            (SolidColorBrush)new BrushConverter().ConvertFrom("#2ecc71")!, // green
-            (SolidColorBrush)new BrushConverter().ConvertFrom("#e74c3c")!  // red
-        };
-        
+        private readonly List<Brush> _palette =
+            new()
+            {
+                (SolidColorBrush)new BrushConverter().ConvertFrom("#007acc")!, // blue
+                (SolidColorBrush)new BrushConverter().ConvertFrom("#1abc9c")!, // teal
+                (SolidColorBrush)new BrushConverter().ConvertFrom("#9b59b6")!, // purple
+                (SolidColorBrush)new BrushConverter().ConvertFrom("#e67e22")!, // orange
+                (SolidColorBrush)new BrushConverter().ConvertFrom("#2ecc71")!, // green
+                (SolidColorBrush)new BrushConverter().ConvertFrom("#e74c3c")! // red
+            };
+
         public TaskChatPage()
         {
             InitializeComponent();
@@ -36,19 +37,19 @@ namespace DaggerTaskManager.Views
         }
 
         private int _nextColorIndex = 0;
-        
+
         private Brush GetUserColor(string user)
         {
             if (_userColors.TryGetValue(user, out var color))
                 return color;
-        
+
             // Assign next color in palette
             var newColor = _palette[_nextColorIndex % _palette.Count];
             _userColors[user] = newColor;
             _nextColorIndex++;
             return newColor;
         }
-        
+
         private void SetupSignalR()
         {
             _connection = new HubConnectionBuilder()
@@ -57,15 +58,22 @@ namespace DaggerTaskManager.Views
                 .Build();
 
             // Incoming messages
-            _connection.On<string, string>("ReceiveMessage", (user, message) =>
-            {
-                Dispatcher.Invoke(() =>
+            _connection.On<string, string>(
+                "ReceiveMessage",
+                (user, message) =>
                 {
-                    bool isSelf = string.Equals(user, _userName, StringComparison.OrdinalIgnoreCase);
-                    AddMessageBubble(user, message, isSelf);
-                    ScrollToBottom();
-                });
-            });
+                    Dispatcher.Invoke(() =>
+                    {
+                        bool isSelf = string.Equals(
+                            user,
+                            _userName,
+                            StringComparison.OrdinalIgnoreCase
+                        );
+                        AddMessageBubble(user, message, isSelf);
+                        ScrollToBottom();
+                    });
+                }
+            );
 
             Connect();
         }
@@ -88,7 +96,7 @@ namespace DaggerTaskManager.Views
 
         private void InputBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            bool isEnter = e.Key == Key.Return || e.Key == Key.Enter;     // main + numpad
+            bool isEnter = e.Key == Key.Return || e.Key == Key.Enter; // main + numpad
             bool shiftHeld = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
 
             if (isEnter && !shiftHeld)
@@ -103,7 +111,8 @@ namespace DaggerTaskManager.Views
         private async void SendMessage()
         {
             string text = InputBox.Text.Trim();
-            if (string.IsNullOrEmpty(text)) return;
+            if (string.IsNullOrEmpty(text))
+                return;
             InputBox.Clear();
 
             try
@@ -130,47 +139,47 @@ namespace DaggerTaskManager.Views
             ScrollToBottom();
         }
 
-         private void AddMessageBubble(string user, string message, bool isSelf)
-         {
-             var stack = new StackPanel { Orientation = Orientation.Vertical };
-        
-             var label = new TextBlock
-             {
-                 Text = user,
-                 Foreground = Brushes.White,
-                 Background = GetUserColor(user),   // 👈 unique per user
-                 Padding = new Thickness(6, 2, 6, 2),
-                 FontWeight = FontWeights.Bold,
-                 FontSize = 12,
-                 HorizontalAlignment = HorizontalAlignment.Left,
-                 Margin = new Thickness(0, 0, 0, 6)
-             };
-        
-             var text = new TextBlock
-             {
-                 Text = message,
-                 Foreground = Brushes.White,
-                 TextWrapping = TextWrapping.Wrap,
-                 MaxWidth = 320
-             };
-        
-             stack.Children.Add(label);
-             stack.Children.Add(text);
-        
-             var bubble = new Border
-             {
-                 Background = isSelf
-                     ? (SolidColorBrush)new BrushConverter().ConvertFrom("#274b6d")!  // keep self distinct
-                     : (SolidColorBrush)new BrushConverter().ConvertFrom("#3a3a3a")!, // other base background
-                 CornerRadius = new CornerRadius(10),
-                 Padding = new Thickness(12),
-                 Margin = new Thickness(6),
-                 HorizontalAlignment = isSelf ? HorizontalAlignment.Right : HorizontalAlignment.Left,
-                 Child = stack
-             };
-        
-             ChatPanel.Children.Add(bubble);
-         }
+        private void AddMessageBubble(string user, string message, bool isSelf)
+        {
+            var stack = new StackPanel { Orientation = Orientation.Vertical };
+
+            var label = new TextBlock
+            {
+                Text = user,
+                Foreground = Brushes.White,
+                Background = GetUserColor(user), // 👈 unique per user
+                Padding = new Thickness(6, 2, 6, 2),
+                FontWeight = FontWeights.Bold,
+                FontSize = 12,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(0, 0, 0, 6)
+            };
+
+            var text = new TextBlock
+            {
+                Text = message,
+                Foreground = Brushes.White,
+                TextWrapping = TextWrapping.Wrap,
+                MaxWidth = 320
+            };
+
+            stack.Children.Add(label);
+            stack.Children.Add(text);
+
+            var bubble = new Border
+            {
+                Background = isSelf
+                    ? (SolidColorBrush)new BrushConverter().ConvertFrom("#274b6d")! // keep self distinct
+                    : (SolidColorBrush)new BrushConverter().ConvertFrom("#3a3a3a")!, // other base background
+                CornerRadius = new CornerRadius(10),
+                Padding = new Thickness(12),
+                Margin = new Thickness(6),
+                HorizontalAlignment = isSelf ? HorizontalAlignment.Right : HorizontalAlignment.Left,
+                Child = stack
+            };
+
+            ChatPanel.Children.Add(bubble);
+        }
 
         private void ScrollToBottom()
         {
