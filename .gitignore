@@ -1,0 +1,8 @@
+# Ignore Visual Studio working files
+.vs/
+.vs\
+*.vsidx
+
+#Ignore output folders
+bin/
+obj/
