@@ -3,65 +3,138 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Background="#1e1e1e">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- Header -->
-            <RowDefinition Height="*"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <!-- Sidebar -->
+            <ColumnDefinition Width="*"/>
             <!-- Chat area -->
-            <RowDefinition Height="Auto"/>
-            <!-- Input -->
-        </Grid.RowDefinitions>
+        </Grid.ColumnDefinitions>
 
-        <!-- Header -->
-        <DockPanel Grid.Row="0" Background="#252526">
-            <TextBlock Text="Task Chat"
-                       Padding="10,0,0,0"
-                       Foreground="White" FontSize="16" FontWeight="Bold"/>
-            <TextBlock x:Name="UserNameBlock"
-                       Foreground="#9cdcfe" Margin="10,0,0,0"
-                       VerticalAlignment="Center"/>
-        </DockPanel>
-
-        <!-- Chat history -->
-        <ScrollViewer x:Name="ChatScroll"
-                      Grid.Row="1"
+        <!-- ===== Sidebar: Task List ===== -->
+        <ScrollViewer Grid.Column="0"
                       VerticalScrollBarVisibility="Auto"
-                      Background="#252526">
-            <StackPanel x:Name="ChatPanel" Margin="10"/>
+                      Background="#14171F">
+            <ListBox x:Name="ChatList"
+                     ItemsSource="{Binding WorkTasks}"
+                     Background="#14171F"
+                     BorderThickness="0"
+                     Foreground="White"
+                     SelectionMode="Single">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="0,0,0,1"
+                                BorderBrush="#2C2C2C"
+                                Padding="10">
+                            <StackPanel>
+                                <!-- Title -->
+                                <TextBlock Text="{Binding Title}"
+                                           Foreground="White"
+                                           FontWeight="SemiBold"
+                                           TextWrapping="Wrap"/>
+
+                                <!-- Chips -->
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="0,4,0,0">
+                                    <Border Background="#2D2D30"
+                                            CornerRadius="8"
+                                            Padding="6,2"
+                                            Margin="0,0,6,0">
+                                        <TextBlock Text="{Binding Status}"
+                                                   Foreground="#CFE7FF"
+                                                   FontSize="11"/>
+                                    </Border>
+                                    <Border Background="#2D2D30"
+                                            CornerRadius="8"
+                                            Padding="6,2">
+                                        <TextBlock Text="{Binding DueDateDisplay}"
+                                                   Foreground="#AAB2C0"
+                                                   FontSize="11"/>
+
+                                    </Border>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </ScrollViewer>
 
-        <!-- Input area -->
-        <Grid Grid.Row="2" Margin="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+        <!-- ===== Main Chat Area ===== -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Header -->
+                <RowDefinition Height="*"/>
+                <!-- Chat history -->
+                <RowDefinition Height="Auto"/>
+                <!-- Input -->
+            </Grid.RowDefinitions>
 
-            <TextBox x:Name="InputBox"
-                     Grid.Column="0"
-                     Background="#2d2d30"
-                     Foreground="White"
-                     FontSize="14"
-                     FontFamily="Segoe UI"
-                     Padding="8"
-                     BorderThickness="1"
-                     BorderBrush="Gray"
-                     VerticalAlignment="Center"
-                     MinHeight="40"
-                     AcceptsReturn="True"
-                     TextWrapping="Wrap"
-                     PreviewKeyDown="InputBox_PreviewKeyDown"/>
+            <!-- Header -->
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="#252526"
+                    Padding="10">
+                <DockPanel>
+                    <TextBlock x:Name="ChatTitleBlock"
+                               Foreground="White"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               DockPanel.Dock="Left"/>
+                    <Button Content="🔗 Open Link"
+                            DockPanel.Dock="Right"
+                            Padding="6,2"
+                            Background="#007acc"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Margin="10,0,0,0"/>
+                </DockPanel>
+            </Border>
 
-            <Button Grid.Column="1"
-                    Content="Send"
-                    Margin="8,0,0,0"
-                    Padding="10,6"
-                    Background="#007acc"
-                    Foreground="White"
-                    BorderThickness="0"
-                    VerticalAlignment="Stretch"
-                    Height="{Binding ActualHeight, ElementName=InputBox}"
-                    Click="SendButton_Click"/>
+
+            <!-- Chat history -->
+            <ScrollViewer x:Name="ChatScroll"
+                          Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          Background="#1e1e1e">
+                <StackPanel x:Name="ChatPanel"
+                            Margin="10"/>
+            </ScrollViewer>
+
+            <!-- Input area -->
+            <Grid Grid.Row="2"
+                  Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="InputBox"
+                         Grid.Column="0"
+                         Background="#2d2d30"
+                         Foreground="White"
+                         FontSize="14"
+                         FontFamily="Segoe UI"
+                         Padding="8"
+                         BorderThickness="1"
+                         BorderBrush="Gray"
+                         VerticalAlignment="Center"
+                         MinHeight="40"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         PreviewKeyDown="InputBox_PreviewKeyDown"/>
+
+                <Button Grid.Column="1"
+                        Content="Send"
+                        Margin="8,0,0,0"
+                        Padding="10,6"
+                        Background="#007acc"
+                        Foreground="White"
+                        BorderThickness="0"
+                        VerticalAlignment="Stretch"
+                        Height="{Binding ActualHeight, ElementName=InputBox}"
+                        Click="SendButton_Click"/>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

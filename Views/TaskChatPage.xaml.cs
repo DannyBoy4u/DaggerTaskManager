@@ -1,17 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using DaggerTaskManager.MappingObjects;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace DaggerTaskManager.Views
 {
     public partial class TaskChatPage : Page
     {
-        private HubConnection _connection;
+        private HubConnection? _connection;
         private readonly string _userName;
         private readonly Dictionary<string, Brush> _userColors = new();
+        private int _nextColorIndex = 0;
 
         // Palette of colors to cycle through
         private readonly List<Brush> _palette =
@@ -25,50 +29,70 @@ namespace DaggerTaskManager.Views
                 (SolidColorBrush)new BrushConverter().ConvertFrom("#e74c3c")! // red
             };
 
+        public ObservableCollection<GetWorkItemFullMappingObject> WorkTasks { get; } = new();
+
+        private GetWorkItemFullMappingObject? _currentTask;
+
         public TaskChatPage()
         {
             InitializeComponent();
+            DataContext = this;
 
-            // Simple username (timestamp to avoid duplicates)
             _userName = $"User-{Environment.MachineName}-{DateTime.Now:HHmmss}";
-            UserNameBlock.Text = $" |   You: {_userName}";
 
             SetupSignalR();
+
+            // Demo tasks (remove when hooking API)
+            WorkTasks.Add(
+                new GetWorkItemFullMappingObject
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Fix Login Bug",
+                    Status = "Open",
+                    EpochDueDate = DateTimeOffset.Now.ToUnixTimeSeconds()
+                }
+            );
+            WorkTasks.Add(
+                new GetWorkItemFullMappingObject
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Sprint Planning",
+                    Status = "In Progress",
+                    EpochDueDate = DateTimeOffset.Now.AddDays(2).ToUnixTimeSeconds()
+                }
+            );
+
+            ChatList.SelectionChanged += ChatList_SelectionChanged;
         }
 
-        private int _nextColorIndex = 0;
-
-        private Brush GetUserColor(string user)
+        private void ChatList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_userColors.TryGetValue(user, out var color))
-                return color;
+            if (ChatList.SelectedItem is GetWorkItemFullMappingObject task)
+            {
+                _currentTask = task;
+                ChatTitleBlock.Text = task.Title;
 
-            // Assign next color in palette
-            var newColor = _palette[_nextColorIndex % _palette.Count];
-            _userColors[user] = newColor;
-            _nextColorIndex++;
-            return newColor;
+                if (_connection != null)
+                {
+                    _connection.InvokeAsync("JoinGroup", task.Id.ToString());
+                }
+            }
         }
 
         private void SetupSignalR()
         {
             _connection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:5080/chatHub") // matches server
+                .WithUrl("http://localhost:5080/chatHub")
                 .WithAutomaticReconnect()
                 .Build();
 
-            // Incoming messages
             _connection.On<string, string>(
                 "ReceiveMessage",
                 (user, message) =>
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        bool isSelf = string.Equals(
-                            user,
-                            _userName,
-                            StringComparison.OrdinalIgnoreCase
-                        );
+                        bool isSelf = string.Equals(user, _userName, StringComparison.OrdinalIgnoreCase);
                         AddMessageBubble(user, message, isSelf);
                         ScrollToBottom();
                     });
@@ -80,6 +104,8 @@ namespace DaggerTaskManager.Views
 
         private async void Connect()
         {
+            if (_connection == null) return;
+
             try
             {
                 await _connection.StartAsync();
@@ -91,33 +117,32 @@ namespace DaggerTaskManager.Views
             }
         }
 
-        // Send handlers
         private void SendButton_Click(object sender, RoutedEventArgs e) => SendMessage();
 
         private void InputBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            bool isEnter = e.Key == Key.Return || e.Key == Key.Enter; // main + numpad
-            bool shiftHeld = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
-
-            if (isEnter && !shiftHeld)
+            if (e.Key == Key.Enter && !Keyboard.IsKeyDown(Key.LeftShift))
             {
-                e.Handled = true; // stop newline
+                e.Handled = true;
                 SendMessage();
                 InputBox.Clear();
             }
-            // If Shift+Enter -> do nothing; TextBox will insert a newline
         }
 
         private async void SendMessage()
         {
             string text = InputBox.Text.Trim();
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(text) || _currentTask == null || _connection == null)
                 return;
-            InputBox.Clear();
 
             try
             {
-                await _connection.InvokeAsync("SendMessage", _userName, text);
+                await _connection.InvokeAsync(
+                    "SendMessageToGroup",
+                    _currentTask.Id.ToString(),
+                    _userName,
+                    text
+                );
             }
             catch (Exception ex)
             {
@@ -125,7 +150,6 @@ namespace DaggerTaskManager.Views
             }
         }
 
-        // UI helpers
         private void AddSystem(string message)
         {
             var tb = new TextBlock
@@ -147,7 +171,7 @@ namespace DaggerTaskManager.Views
             {
                 Text = user,
                 Foreground = Brushes.White,
-                Background = GetUserColor(user), // 👈 unique per user
+                Background = GetUserColor(user),
                 Padding = new Thickness(6, 2, 6, 2),
                 FontWeight = FontWeights.Bold,
                 FontSize = 12,
@@ -169,8 +193,8 @@ namespace DaggerTaskManager.Views
             var bubble = new Border
             {
                 Background = isSelf
-                    ? (SolidColorBrush)new BrushConverter().ConvertFrom("#274b6d")! // keep self distinct
-                    : (SolidColorBrush)new BrushConverter().ConvertFrom("#3a3a3a")!, // other base background
+                    ? (SolidColorBrush)new BrushConverter().ConvertFrom("#274b6d")!
+                    : (SolidColorBrush)new BrushConverter().ConvertFrom("#3a3a3a")!,
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(12),
                 Margin = new Thickness(6),
@@ -184,6 +208,17 @@ namespace DaggerTaskManager.Views
         private void ScrollToBottom()
         {
             ChatScroll.ScrollToEnd();
+        }
+
+        private Brush GetUserColor(string user)
+        {
+            if (_userColors.TryGetValue(user, out var color))
+                return color;
+
+            var newColor = _palette[_nextColorIndex % _palette.Count];
+            _userColors[user] = newColor;
+            _nextColorIndex++;
+            return newColor;
         }
     }
 }
