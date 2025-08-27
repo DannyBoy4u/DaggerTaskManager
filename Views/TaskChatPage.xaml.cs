@@ -1,12 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Net.Http;
 using System.Windows.Media;
 using DaggerTaskManager.MappingObjects;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Text.Json;
 
 namespace DaggerTaskManager.Views
 {
@@ -16,6 +18,12 @@ namespace DaggerTaskManager.Views
         private readonly string _userName;
         private readonly Dictionary<string, Brush> _userColors = new();
         private int _nextColorIndex = 0;
+
+        private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(30) };
+
+        private CancellationTokenSource? _cts;
+
+        private readonly Dictionary<Guid, List<TaskChatMessage>> _taskChats = new();
 
         // Palette of colors to cycle through
         private readonly List<Brush> _palette =
@@ -33,34 +41,67 @@ namespace DaggerTaskManager.Views
 
         private GetWorkItemFullMappingObject? _currentTask;
 
+        private Uri BuildUri()
+        {
+            var baseUri = new Uri("http://localhost:5080", UriKind.Absolute);
+            return new Uri(baseUri, "/work-tasks".TrimStart('/'));
+        }
+
+
+        public class TaskChatMessage
+        {
+            public string Message { get; set; }
+            public string User { get; set; }
+        }
+
+        private async void Get_WorkTasks(object sender, RoutedEventArgs e)
+        {
+            _cts = new CancellationTokenSource();
+            try
+            {
+                var resp = await Http.GetAsync(BuildUri(), _cts.Token);
+                resp.EnsureSuccessStatusCode();
+
+                var json = await resp.Content.ReadAsStringAsync(_cts.Token);
+
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+                List<GetWorkItemFullMappingObject>? workTasks = JsonSerializer.Deserialize<
+                    List<GetWorkItemFullMappingObject>
+                >(json, options);
+
+                if (workTasks != null && workTasks.Count != 0)
+                {
+                    WorkTasks.Clear();
+                    workTasks.ForEach(task => WorkTasks.Add(task));
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("Request canceled.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "GET failed");
+            }
+            finally
+            {
+                _cts?.Dispose();
+                _cts = null;
+            }
+        }
+
         public TaskChatPage()
         {
             InitializeComponent();
             DataContext = this;
+            Loaded += Get_WorkTasks;
 
             _userName = $"User-{Environment.MachineName}-{DateTime.Now:HHmmss}";
 
             SetupSignalR();
 
-            // Demo tasks (remove when hooking API)
-            WorkTasks.Add(
-                new GetWorkItemFullMappingObject
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Fix Login Bug",
-                    Status = "Open",
-                    EpochDueDate = DateTimeOffset.Now.ToUnixTimeSeconds()
-                }
-            );
-            WorkTasks.Add(
-                new GetWorkItemFullMappingObject
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Sprint Planning",
-                    Status = "In Progress",
-                    EpochDueDate = DateTimeOffset.Now.AddDays(2).ToUnixTimeSeconds()
-                }
-            );
+
 
             ChatList.SelectionChanged += ChatList_SelectionChanged;
         }
@@ -70,12 +111,20 @@ namespace DaggerTaskManager.Views
             if (ChatList.SelectedItem is GetWorkItemFullMappingObject task)
             {
                 _currentTask = task;
+                ChatPanel.Children.Clear();
+
+                _taskChats.TryGetValue(_currentTask.Id, out var list);
+
+                list?.ForEach(item =>
+                {
+                    bool isSelf = string.Equals(item.User, _userName, StringComparison.OrdinalIgnoreCase);
+
+                    AddMessageBubble(item.User, item.Message, isSelf);
+                });
+
                 ChatTitleBlock.Text = task.Title;
 
-                if (_connection != null)
-                {
-                    _connection.InvokeAsync("JoinGroup", task.Id.ToString());
-                }
+
             }
         }
 
@@ -86,9 +135,22 @@ namespace DaggerTaskManager.Views
                 .WithAutomaticReconnect()
                 .Build();
 
-            _connection.On<string, string>(
-                "ReceiveMessage",
-                (user, message) =>
+            // Incoming messages
+            _connection.On<string, string, Guid>("ReceiveMessage", (user, message, taskId) =>
+            {
+                if (!_taskChats.TryGetValue(taskId, out var list))
+                {
+                    list = new List<TaskChatMessage>();
+                    _taskChats[taskId] = list;
+                }
+
+                list.Add(new TaskChatMessage
+                {
+                    Message = message,
+                    User = user,
+                });
+
+                if (_currentTask.Id == taskId)
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -97,7 +159,7 @@ namespace DaggerTaskManager.Views
                         ScrollToBottom();
                     });
                 }
-            );
+            });
 
             Connect();
         }
@@ -137,12 +199,7 @@ namespace DaggerTaskManager.Views
 
             try
             {
-                await _connection.InvokeAsync(
-                    "SendMessageToGroup",
-                    _currentTask.Id.ToString(),
-                    _userName,
-                    text
-                );
+                await _connection.InvokeAsync("SendMessage", _userName, text, _currentTask.Id);
             }
             catch (Exception ex)
             {
